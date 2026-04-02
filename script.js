@@ -19,15 +19,20 @@ function resolveSiteUrl() {
     origin.startsWith("file:") ||
     origin.includes("localhost") ||
     origin.includes("127.0.0.1");
+  const normalizedPath = pathname.endsWith("/")
+    ? pathname
+    : `${pathname.split("/").slice(0, -1).join("/")}/`;
+  const basePath = normalizedPath === "//" ? "/" : normalizedPath;
 
   return {
-    pageUrl: isLocal ? "https://example.com/" : `${origin}${pathname}`,
-    siteUrl: isLocal ? "https://example.com" : origin
+    pageUrl: isLocal ? "https://adil-khb.github.io/cocodev/" : `${origin}${pathname}`,
+    siteUrl: isLocal ? "https://adil-khb.github.io/cocodev" : `${origin}${basePath.replace(/\/$/, "")}`,
+    assetBaseUrl: isLocal ? "https://adil-khb.github.io/cocodev/" : `${origin}${basePath}`
   };
 }
 
 function updateSeoUrls() {
-  const { pageUrl, siteUrl } = resolveSiteUrl();
+  const { pageUrl, siteUrl, assetBaseUrl } = resolveSiteUrl();
 
   if (canonicalLink) {
     canonicalLink.href = pageUrl;
@@ -39,7 +44,7 @@ function updateSeoUrls() {
 
   const ogImage = document.querySelector('meta[property="og:image"]');
   if (ogImage) {
-    ogImage.content = `${siteUrl}/assets/images/social-preview.png`;
+    ogImage.content = `${assetBaseUrl}assets/images/social-preview.png`;
   }
 
   if (orgSchema) {
